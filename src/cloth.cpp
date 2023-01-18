@@ -9,7 +9,7 @@
 #include "glm/gtx/norm.hpp"
 
 
-Constraint::Constraint(Particle* p1, Particle* p2) : p1(p1), p2(p2) {
+Constraint::Constraint(ClothParticle* p1, ClothParticle* p2) : p1(p1), p2(p2) {
     glm::vec3 vec = p1->position - p2->position;
     rest_distance = glm::length(vec);
 }
@@ -19,8 +19,8 @@ void Constraint::satisfyConstraint() const {
     float current_distance = glm::length(p1_to_p2); // current distance between p1 and p2
     glm::vec3 correctionVector = p1_to_p2 * (1.f - rest_distance/current_distance); // The offset vector that could moves p1 into a distance of rest_distance to p2
     glm::vec3 correctionVectorHalf = correctionVector * 0.5f; // Lets make it half that length, so that we can move BOTH p1 and p2.
-    p1->OffsetPos(correctionVectorHalf);
-    p2->OffsetPos(-correctionVectorHalf);
+    p1->offsetPos(correctionVectorHalf);
+    p2->offsetPos(-correctionVectorHalf);
 }
 
 Cloth::Cloth()
@@ -64,7 +64,7 @@ void Cloth::createParticles() {
 
             glm::vec3 pos = glm::vec3(width * (x/(float)num_particles_width), height * (y/(float)num_particles_height), 0);
             pos += this->position;
-            particles[y*num_particles_width+x] = Particle(pos, 1.f, 0.01);
+            particles[y*num_particles_width+x] = ClothParticle(pos);
 
         }
     }
@@ -92,7 +92,7 @@ void Cloth::createParticles() {
 
 }
 
-Particle* Cloth::getParticle(int x, int y) {
+ClothParticle* Cloth::getParticle(int x, int y) {
     return &particles[y*num_particles_width + x];
 }
 
@@ -102,15 +102,13 @@ void Cloth::makeConstraint(int x1, int y1, int x2, int y2) {
 
 void Cloth::addForce(const glm::vec3 &direction) {
     for(auto& particle : particles) {
-        particle.AddForce(direction);
+        particle.addForce(direction);
     }
 
 }
 
 void Cloth::update(const float &elapsedTime) {
     addForce(glm::vec3(0, -0.005, 0)); // add gravity each frame, pointing down
-
-
 
     for(int i=0; i < iteration_count; i++) {// iterate over all constraints several times
         for(auto& constraint : constraints) {
@@ -119,22 +117,21 @@ void Cloth::update(const float &elapsedTime) {
     }
 
     for(auto& p : particles) {
-        p.update(elapsedTime*0.1);
+        p.update(elapsedTime);
     }
-
-//    getParticle(8, 8)->position = this->position;
-//    getParticle(0, 2)->movable = false;
 
     floorCollision(0.f);
 }
 
 void Cloth::ballCollision(const glm::vec3& center, float radius) {
-    float radius_offset = std::pow(radius + 0.001f, 2.f);
+
+    float radius_offset = radius + 0.003f;
     for(auto& particle : particles) {
+
         glm::vec3 v = particle.position - center;
-        float l = glm::length2(v);
+        float l = glm::length(v);
         if (l < radius_offset) {  // if the particle is inside the ball
-            particle.OffsetPos(glm::normalize(v) * std::sqrt(radius_offset - l)); // project the particle to the surface of the ball
+            particle.offsetPos(glm::normalize(v) * (radius_offset-l)); // project the particle to the surface of the ball
         }
 
     }
@@ -207,3 +204,28 @@ void Cloth::render3D(const RenderApi3D &api) {
     deleteBuffer3D(buffer3D);
 
 }
+
+void ClothParticle::addForce(glm::vec3 f) {
+    acceleration += f/mass;
+}
+
+void ClothParticle::update(double elapsedTime) {
+    if(movable) {
+        glm::vec3 temp = position;
+        position = position + (position - old_position) * (1-drag) + (acceleration*(float)0.016);
+        old_position = temp;
+        acceleration = glm::vec3(0,0,0); // acceleration is reset since it HAS been translated into a change in position (and implicitely into velocity)
+    }
+}
+
+void ClothParticle::offsetPos(glm::vec3 offset) {
+    if(movable)
+        position += offset;
+}
+
+ClothParticle::ClothParticle(const glm::vec3 &pos)
+        : position(pos)
+        , old_position(pos)
+        , acceleration(glm::vec3(0,0,0))
+        , mass(1)
+        , movable(true) {}
