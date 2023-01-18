@@ -6,8 +6,6 @@
 
 Particle::Particle(const glm::vec3 &position, const float& mass) :
         Entity(position),
-        speed(speed),
-        acceleration(acceleration),
         mass(mass){}
 
 void Particle::init() {
