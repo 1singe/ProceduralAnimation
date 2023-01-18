@@ -51,7 +51,8 @@ set(SOURCE_FILES
 	thirdparty/imgui/imgui_impl_opengl3.cpp
 
 	src/particle.cpp
-		src/entity.cpp)
+	src/entity.cpp
+	src/shaders/burst.cpp)
 
 set(INCLUDE_DIRECTORIES 
 	${INCLUDE_DIRECTORIES}
