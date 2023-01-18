@@ -30,6 +30,8 @@ struct MyViewer : Viewer {
     Particle* particle;
     std::shared_ptr<Cloth> cloth;
 
+    float sphereAngle = 0.0;
+
     std::vector<std::shared_ptr<Entity>> entities;
 
 
@@ -38,9 +40,10 @@ struct MyViewer : Viewer {
 
 	void init() override {
 
-        cloth = std::make_shared<Cloth>(glm::vec3{-1.2, 0.5, 1.2}, 2, 2, 25, 25);
-        cloth->getParticle(2, 24)->movable = false;
+        cloth = std::make_shared<Cloth>(glm::vec3{-1.2, 0.1, 1.2}, 2, 2, 25, 25);
+//        cloth->getParticle(2, 24)->movable = false;
         cloth->getParticle(21, 24)->movable = false;
+        cloth->getParticle(21, 0)->addForce({0.f, 0.f, 10.f});
 
         particle = new Particle(glm::vec3(0.f, 0.f, 0.f), 1.f, 0.035f);
 		cubePosition = glm::vec3(1.f, 0.25f, -1.f);
@@ -63,6 +66,7 @@ struct MyViewer : Viewer {
 	void update(double elapsedTime) override {
 
 		boneAngle = (float) elapsedTime;
+		sphereAngle = (float) elapsedTime;
 
 		leftMouseButtonPressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 		altKeyPressed = glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT_ALT) == GLFW_PRESS;
@@ -78,7 +82,8 @@ struct MyViewer : Viewer {
             entity->update(elapsedTime);
         }
 
-        cloth->ballCollision(glm::vec3(-1.f, 0.5f, 1.f), 0.5f);
+        glm::quat q = glm::angleAxis(boneAngle, glm::vec3(0.f, 1.f, 0.f));
+        cloth->ballCollision(glm::vec3(-1.f, 0.5f, 1.f) * q, 0.5f);
 
 	}
 
@@ -113,7 +118,8 @@ struct MyViewer : Viewer {
 			api.solidSphere(childAbsPos, 0.05f, 10, 10, white);
 		}
 
-		api.solidSphere(glm::vec3(-1.f, 0.5f, 1.f), 0.5f, 100, 100, white);
+        glm::quat q = glm::angleAxis(boneAngle, glm::vec3(0.f, 1.f, 0.f));
+		api.solidSphere(glm::vec3(-1.f, 0.5f, 1.f) * q, 0.5f, 100, 100, white);
 
         for(auto& entity : entities) {
             entity->render3D(api);

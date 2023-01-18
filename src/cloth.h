@@ -11,14 +11,31 @@
 #include "entity.h"
 #include "particle.h"
 
+class ClothParticle {
+
+public:
+    glm::vec3 position;
+    glm::vec3 old_position;
+    glm::vec3 acceleration;
+    bool movable;
+    float mass = 1;
+    float drag = 0.01;
+
+    ClothParticle(const glm::vec3& pos);
+    ClothParticle() = default;
+
+    void addForce(glm::vec3 f);
+    void update(double elapsedTime);
+    void offsetPos(glm::vec3 offset);
+};
 
 struct Constraint {
 
-    Constraint(Particle* p1, Particle* p2);
+    Constraint(ClothParticle* p1, ClothParticle* p2);
 
     float rest_distance;
-    Particle* p1;
-    Particle* p2;
+    ClothParticle* p1;
+    ClothParticle* p2;
 
     void satisfyConstraint() const;
 
@@ -33,9 +50,9 @@ public:
     Cloth(const glm::vec3& position);
     Cloth(const glm::vec3& position, float width, float height, int num_particles_width, int num_particles_height);
 
-    int iteration_count = 10;
+    int iteration_count = 2;
 
-    Particle* getParticle(int x, int y);
+    ClothParticle* getParticle(int x, int y);
     void addForce(const glm::vec3& direction);
 
     // Entity override
@@ -48,7 +65,7 @@ public:
 
 private:
 
-    std::vector<Particle> particles;
+    std::vector<ClothParticle> particles;
     std::vector<Constraint> constraints;
 
     int num_particles_width;
