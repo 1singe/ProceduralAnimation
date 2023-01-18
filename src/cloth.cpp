@@ -168,15 +168,11 @@ void Cloth::render3D(const RenderApi3D &api) {
 
             vertices.push_back(getParticle(x, y)->position);
             vertices.push_back(getParticle(x, y+1)->position);
-            vertices.push_back(getParticle(x, y+1)->position);
-            vertices.push_back(getParticle(x+1, y)->position);
             vertices.push_back(getParticle(x+1, y)->position);
             vertices.push_back(getParticle(x, y)->position);
 
             vertices.push_back(getParticle(x+1, y+1)->position);
             vertices.push_back(getParticle(x+1, y)->position);
-            vertices.push_back(getParticle(x+1, y)->position);
-            vertices.push_back(getParticle(x, y+1)->position);
             vertices.push_back(getParticle(x, y+1)->position);
             vertices.push_back(getParticle(x+1, y+1)->position);
 
