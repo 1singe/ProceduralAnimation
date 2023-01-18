@@ -1,6 +1,7 @@
 #include "viewer.h"
 #include "drawbuffer.h"
 #include "renderapi.h"
+#include "cloth.h"
 
 #include <time.h>
 #include <imgui.h>
@@ -25,6 +26,11 @@ struct MyViewer : Viewer {
 	bool leftMouseButtonPressed;
 	bool altKeyPressed;
 
+
+    std::vector<std::shared_ptr<Entity>> entities;
+
+
+
 	MyViewer() : Viewer(viewerName, 1280, 720) {}
 
 	void init() override {
@@ -34,6 +40,15 @@ struct MyViewer : Viewer {
 		mousePos = {0.f, 0.f};
 		leftMouseButtonPressed = false;
 		altKeyPressed = false;
+
+        // Add entities
+        entities.emplace_back(new Cloth(glm::vec3{1, 1.5, 0.5}));
+
+
+
+        for(auto& entity : entities) {
+            entity->init();
+        }
 	}
 
 	void update(double elapsedTime) override {
@@ -47,6 +62,10 @@ struct MyViewer : Viewer {
 		glfwGetCursorPos(window, &mouseX, &mouseY);
 
 		mousePos = { float(mouseX), viewportHeight - float(mouseY) };
+
+        for(auto& entity : entities) {
+            entity->update(elapsedTime);
+        }
 	}
 
 	void render3D(const RenderApi3D& api) const override {
@@ -81,6 +100,10 @@ struct MyViewer : Viewer {
 		}
 
 		api.solidSphere(glm::vec3(-1.f, 0.5f, 1.f), 0.5f, 100, 100, white);
+
+        for(auto& entity : entities) {
+            entity->render3D(api);
+        }
 	}
 
 	void render2D(const RenderApi2D& api) const override {

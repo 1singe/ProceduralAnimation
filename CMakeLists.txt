@@ -50,9 +50,12 @@ set(SOURCE_FILES
 	thirdparty/imgui/imgui_impl_glfw.cpp
 	thirdparty/imgui/imgui_impl_opengl3.cpp
 
+	# Crewsse files
 	src/particle.cpp
+	src/cloth.cpp
 	src/entity.cpp
-	src/shaders/burst.cpp)
+	src/shaders/burst.cpp
+)
 
 set(INCLUDE_DIRECTORIES 
 	${INCLUDE_DIRECTORIES}

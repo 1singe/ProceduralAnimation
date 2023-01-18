@@ -9,7 +9,7 @@
 #include <glm/vec3.hpp>
 #include "entity.h"
 
-class Particle : public Entity{
+class Particle : public Entity {
 
 public:
     Particle() = default;
@@ -17,7 +17,7 @@ public:
 
     glm::vec3 speed;
     glm::vec3 acceleration;
-    const float mass;
+    float mass;
 
     void init() override;
     void update(const float &elapsedTime) override;
