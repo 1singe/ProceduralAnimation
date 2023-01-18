@@ -4,7 +4,6 @@
 
 #include "particle.h"
 
-
-Particle::Particle(const std::vector<float> &position) {
+Particle::Particle(const glm::vec3 &position) {
 
 }

@@ -6,16 +6,18 @@
 #define OPENGLSANDBOX_PARTICLE_H
 
 #include <vector>
+#include <glm/vec3.hpp>
 
 class Particle {
 
 public:
-    Particle(const std::vector<float> &position);
+    Particle() = default;
+    Particle(const glm::vec3 &position);
 
 private:
-    std::vector<float> position;
-    std::vector<float> acceleration;
-    std::vector<float> speed;
+    glm::vec3 position;
+    glm::vec3 speed;
+    glm::vec3 acceleration;
 
 
 
