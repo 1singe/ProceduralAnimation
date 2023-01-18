@@ -4,13 +4,22 @@
 
 #include "particle.h"
 
-Particle::Particle(const glm::vec3 &position, const glm::vec3 &speed, const glm::vec3 &acceleration) :
-    Entity(position),
-    speed(speed),
-    acceleration(acceleration)
-{}
+Particle::Particle(const glm::vec3 &position, const float& mass) :
+        Entity(position),
+        speed(speed),
+        acceleration(acceleration),
+        mass(mass){}
 
-Particle::Particle(const glm::vec3 &position) : Entity(position),
-    speed(glm::vec3()),
-    acceleration(glm::vec3())
-{}
+void Particle::init() {
+
+}
+
+void Particle::update(const float &elapsedTime) {
+
+}
+
+void Particle::render3D(const RenderApi3D &api) {
+
+}
+
+
