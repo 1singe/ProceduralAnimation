@@ -14,6 +14,7 @@ class Particle : public Entity {
 public:
     Particle() = default;
     Particle(const glm::vec3 &position, const float &mass, const float &drag);
+    Particle(const glm::vec3 &position, const float &mass, const float &drag, const glm::vec3 &forces);
 
     glm::vec3 speed;
     glm::vec3 acceleration;
@@ -27,7 +28,7 @@ public:
     void AddForce(const glm::vec3 &force);
     void OffsetPos(const glm::vec3 &offset);
 
-private:
+protected:
     glm::vec3 forces;
 
 };

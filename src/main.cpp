@@ -10,6 +10,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include "utils.h"
 
 #define COUNTOF(ARRAY) (sizeof(ARRAY) / sizeof(ARRAY[0]))
 
@@ -49,11 +50,9 @@ struct MyViewer : Viewer {
 		leftMouseButtonPressed = false;
 		altKeyPressed = false;
 
-
-
-        entities.emplace_back(cloth);
+        // Add entities
+        entities.emplace_back(new Cloth(glm::vec3{1, 1.5, 0.5}));
         entities.emplace_back(particle);
-
         particle->AddForce(glm::vec3{0, 100, 0});
 
         for(auto& entity : entities) {
