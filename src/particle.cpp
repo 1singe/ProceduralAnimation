@@ -12,7 +12,8 @@ Particle::Particle(const glm::vec3 &position, const float& mass, const float &dr
         mass(mass),
         speed(0),
         acceleration(0),
-        forces(0)
+        forces(0),
+        movable(true)
 {}
 
 void Particle::init() {
@@ -21,11 +22,13 @@ void Particle::init() {
 
 void Particle::update(const float &elapsedTime) {
     //Update physics
-    acceleration = forces / mass;
-    speed += acceleration * elapsedTime;
-    position += speed * elapsedTime;
-    speed *= (1-drag);
-    forces = glm::vec3();
+    if(movable) {
+        acceleration = forces / mass;
+        speed += acceleration * elapsedTime;
+        position += speed * elapsedTime;
+        speed *= (1-drag);
+        forces = glm::vec3();
+    }
 }
 
 void Particle::render3D(const RenderApi3D &api) {
@@ -38,7 +41,10 @@ void Particle::render3D(const RenderApi3D &api) {
 
 
 void Particle::AddForce(const glm::vec3 &force) {
-    forces += force;
+    if(movable) forces += force;
 }
 
 
+void Particle::OffsetPos(const glm::vec3 &offset) {
+    if(movable) position += offset;
+}

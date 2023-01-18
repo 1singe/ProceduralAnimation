@@ -17,13 +17,15 @@ public:
 
     glm::vec3 speed;
     glm::vec3 acceleration;
-    float mass;
-    float drag;
+    float mass = 1.0f;
+    float drag = 0.005f;
+    bool movable = true;
 
     void init() override;
     void update(const float &elapsedTime) override;
     void render3D(const RenderApi3D& api) override;
     void AddForce(const glm::vec3 &force);
+    void OffsetPos(const glm::vec3 &offset);
 
 private:
     glm::vec3 forces;

@@ -27,6 +27,7 @@ struct MyViewer : Viewer {
 	bool altKeyPressed;
 
     Particle* particle;
+    std::shared_ptr<Cloth> cloth;
 
     std::vector<std::shared_ptr<Entity>> entities;
 
@@ -36,6 +37,9 @@ struct MyViewer : Viewer {
 
 	void init() override {
 
+        cloth = std::make_shared<Cloth>(glm::vec3{-1.2, 0.5, 1.2}, 2, 2, 25, 25);
+        cloth->getParticle(2, 24)->movable = false;
+        cloth->getParticle(21, 24)->movable = false;
 
         particle = new Particle(glm::vec3(0.f, 0.f, 0.f), 1.f, 0.035f);
 		cubePosition = glm::vec3(1.f, 0.25f, -1.f);
@@ -45,9 +49,11 @@ struct MyViewer : Viewer {
 		leftMouseButtonPressed = false;
 		altKeyPressed = false;
 
-        // Add entities
-        entities.emplace_back(new Cloth(glm::vec3{1, 1.5, 0.5}));
+
+
+        entities.emplace_back(cloth);
         entities.emplace_back(particle);
+
         particle->AddForce(glm::vec3{0, 100, 0});
 
         for(auto& entity : entities) {
@@ -73,6 +79,7 @@ struct MyViewer : Viewer {
             entity->update(elapsedTime);
         }
 
+        cloth->ballCollision(glm::vec3(-1.f, 0.5f, 1.f), 0.5f);
 
 	}
 
