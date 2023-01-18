@@ -13,11 +13,12 @@ class Particle : public Entity {
 
 public:
     Particle() = default;
-    Particle(const glm::vec3 &position, const float &mass);
+    Particle(const glm::vec3 &position, const float &mass, const float &drag);
 
     glm::vec3 speed;
     glm::vec3 acceleration;
     float mass;
+    float drag;
 
     void init() override;
     void update(const float &elapsedTime) override;
@@ -26,7 +27,7 @@ public:
 
 private:
     glm::vec3 forces;
-    float drag;
+
 };
 
 

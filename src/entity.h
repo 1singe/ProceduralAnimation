@@ -6,6 +6,7 @@
 #define OPENGLSANDBOX_ENTITY_HPP
 
 #include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 
 #include "renderapi.h"

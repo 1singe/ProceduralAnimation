@@ -26,6 +26,7 @@ struct MyViewer : Viewer {
 	bool leftMouseButtonPressed;
 	bool altKeyPressed;
 
+    Particle* particle;
 
     std::vector<std::shared_ptr<Entity>> entities;
 
@@ -34,6 +35,9 @@ struct MyViewer : Viewer {
 	MyViewer() : Viewer(viewerName, 1280, 720) {}
 
 	void init() override {
+
+
+        particle = new Particle(glm::vec3(0.f, 0.f, 0.f), 1.f, 0.035f);
 		cubePosition = glm::vec3(1.f, 0.25f, -1.f);
 		jointPosition = glm::vec3(-1.f, 2.f, -1.f);
 		boneAngle = 0.f;
@@ -43,8 +47,8 @@ struct MyViewer : Viewer {
 
         // Add entities
         entities.emplace_back(new Cloth(glm::vec3{1, 1.5, 0.5}));
-
-
+        entities.emplace_back(particle);
+        particle->AddForce(glm::vec3{0, 100, 0});
 
         for(auto& entity : entities) {
             entity->init();
@@ -52,6 +56,7 @@ struct MyViewer : Viewer {
 	}
 
 	void update(double elapsedTime) override {
+
 		boneAngle = (float) elapsedTime;
 
 		leftMouseButtonPressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
@@ -63,9 +68,12 @@ struct MyViewer : Viewer {
 
 		mousePos = { float(mouseX), viewportHeight - float(mouseY) };
 
+
         for(auto& entity : entities) {
             entity->update(elapsedTime);
         }
+
+
 	}
 
 	void render3D(const RenderApi3D& api) const override {

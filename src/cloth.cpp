@@ -60,7 +60,7 @@ void Cloth::createParticles() {
         for(int y=0; y<num_particles_height; y++) {
 
             glm::vec3 pos = glm::vec3(width * (x/(float)num_particles_width), -height * (y/(float)num_particles_height), 0);
-            particles[y*num_particles_width+x] = Particle(pos, 1.f);
+            particles[y*num_particles_width+x] = Particle(pos, 1.f, 0.005);
 
         }
     }

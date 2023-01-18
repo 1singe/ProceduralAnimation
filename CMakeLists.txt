@@ -54,7 +54,7 @@ set(SOURCE_FILES
 	src/particle.cpp
 	src/cloth.cpp
 	src/entity.cpp
-	src/shaders/burst.cpp
+	src/burst.cpp
 )
 
 set(INCLUDE_DIRECTORIES 
