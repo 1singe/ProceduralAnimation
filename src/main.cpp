@@ -214,6 +214,9 @@ struct MyViewer : Viewer {
         ImGui::InputFloat("Mass: ", &particleSystem->mass);
         ImGui::InputFloat("Lifetime (s): ", &particleSystem->lifetime);
         ImGui::InputFloat("Spawn rate (part/s): ", &particleSystem->spawnRate);
+        ImGui::SliderFloat("Drag: ", &particleSystem->drag, 0, 1);
+
+        ImGui::InputFloat("Start Up Force", &particleSystem->startUpForce);
 
         // Cloth
         if(ImGui::CollapsingHeader("Cloth", ImGuiTreeNodeFlags_DefaultOpen)) {
