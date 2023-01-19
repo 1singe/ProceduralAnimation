@@ -5,4 +5,4 @@
 
 #include "entity.h"
 
-Entity::Entity(const glm::vec3 &position) : position(position){}
+Entity::Entity(const glm::vec3 &position) : position(position), old_position(position){}

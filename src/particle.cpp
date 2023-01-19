@@ -20,13 +20,13 @@ void Particle::init() {
 
 }
 
-void Particle::update(const float &elapsedTime) {
+void Particle::update(const float &deltaTime) {
     //Update physics
     if(movable) {
         acceleration = forces / mass;
-        speed += acceleration * elapsedTime;
-        position += speed * elapsedTime;
-        speed *= (1-drag);
+        speed += acceleration * deltaTime;
+        position += speed * deltaTime;
+        speed *= (1.f-drag);
         forces = glm::vec3();
     }
 }
@@ -36,11 +36,11 @@ void Particle::render3D(const RenderApi3D &api) {
 }
 
 
-void Particle::AddForce(const glm::vec3 &force) {
+void Particle::addForce(const glm::vec3 &force) {
     if(movable) forces += force;
 }
 
 
-void Particle::OffsetPos(const glm::vec3 &offset) {
+void Particle::offsetPos(const glm::vec3 &offset) {
     if(movable) position += offset;
 }

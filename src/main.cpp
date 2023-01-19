@@ -28,7 +28,10 @@ struct MyViewer : Viewer {
 	bool altKeyPressed;
 
     std::shared_ptr<ParticleSystem> particleSystem;
+
+    // Cloth
     std::shared_ptr<Cloth> cloth;
+    float clothGravity = 1.f;
 
     float sphereAngle = 0.0;
 
@@ -42,8 +45,8 @@ struct MyViewer : Viewer {
 	void init() override {
 
         cloth = std::make_shared<Cloth>(glm::vec3{-1.2, 0.1, 1.2}, 2, 2, 25, 25);
-//        cloth->getParticle(2, 24)->movable = false;
-        cloth->getParticle(21, 24)->movable = false;
+        cloth->getParticle(0, 24)->movable = false;
+        cloth->getParticle(24, 24)->movable = false;
         cloth->getParticle(21, 0)->addForce({0.f, 0.f, 10.f});
 
         particleSystem = std::make_shared<ParticleSystem>(ParticleSystem({0, 0, 0}, 3.f, 1.f, 4, 1, 0.2));
@@ -78,15 +81,20 @@ struct MyViewer : Viewer {
 		double mouseY;
 		glfwGetCursorPos(window, &mouseX, &mouseY);
 
-		mousePos = { float(mouseX), viewportHeight - float(mouseY) };
+		mousePos = { float(mouseX), (float)viewportHeight - float(mouseY) };
 
 
         for(auto& entity : entities) {
             entity->update(deltaTime);
         }
 
+        // Cloth
         glm::quat q = glm::angleAxis(boneAngle, glm::vec3(0.f, 1.f, 0.f));
         cloth->ballCollision(glm::vec3(-1.f, 0.5f, 1.f) * q, 0.5f);
+        cloth->floorCollision(0.f);
+        cloth->addForce(glm::vec3(0, -clothGravity, 0)); // add gravity each frame, pointing down
+
+
         lastFrameTime = elapsedTime;
 	}
 
@@ -206,6 +214,11 @@ struct MyViewer : Viewer {
         ImGui::InputFloat("Mass: ", &particleSystem->mass);
         ImGui::InputFloat("Lifetime (s): ", &particleSystem->lifetime);
         ImGui::InputFloat("Spawn rate (part/s): ", &particleSystem->spawnRate);
+
+        // Cloth
+        if(ImGui::CollapsingHeader("Cloth", ImGuiTreeNodeFlags_DefaultOpen)) {
+            ImGui::SliderFloat("Gravity", &clothGravity, 0.f, 10.f);
+        }
 
 		ImGui::End();
 

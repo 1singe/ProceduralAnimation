@@ -23,7 +23,7 @@ void ParticleSystem::update(const float &elapsedTime) {
         it->update(elapsedTime);
         it->timeSinceSpawn += elapsedTime;
         if(gravityEnabled){
-            it->AddForce(utils::GRAVITY * it->mass);
+            it->addForce(utils::GRAVITY * it->mass);
         }
         if(it->timeSinceSpawn >= it->lifetime){
             it = particles.erase(it);

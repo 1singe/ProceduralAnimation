@@ -15,12 +15,11 @@ Constraint::Constraint(ClothParticle* p1, ClothParticle* p2) : p1(p1), p2(p2) {
 }
 
 void Constraint::satisfyConstraint() const {
-    glm::vec3 p1_to_p2 = p2->position - p1->position; // vector from p1 to p2
-    float current_distance = glm::length(p1_to_p2); // current distance between p1 and p2
-    glm::vec3 correctionVector = p1_to_p2 * (1.f - rest_distance/current_distance); // The offset vector that could moves p1 into a distance of rest_distance to p2
-    glm::vec3 correctionVectorHalf = correctionVector * 0.5f; // Lets make it half that length, so that we can move BOTH p1 and p2.
-    p1->offsetPos(correctionVectorHalf);
-    p2->offsetPos(-correctionVectorHalf);
+    float k = 1.f;
+    glm::vec3 diff = p1->position - p2->position;
+    glm::vec3 Fab = k * (rest_distance - glm::length(diff)) * (diff / glm::length(diff)) * 0.5f;
+    p1->offsetPos(Fab);
+    p2->offsetPos(-Fab);
 }
 
 Cloth::Cloth()
@@ -64,29 +63,23 @@ void Cloth::createParticles() {
 
             glm::vec3 pos = glm::vec3(width * (x/(float)num_particles_width), height * (y/(float)num_particles_height), 0);
             pos += this->position;
-            particles[y*num_particles_width+x] = ClothParticle(pos);
+            particles[y*num_particles_width+x] = ClothParticle(pos, 1.0f, 0.01f);
 
         }
     }
 
     // Connecting immediate neighbor particles with constraints (distance 1 and sqrt(2) in the grid)
-    for(int x=0; x<num_particles_width; x++) {
-        for(int y=0; y<num_particles_height; y++) {
-            if (x<num_particles_width-1) makeConstraint(x,y,x+1,y);
-            if (y<num_particles_height-1) makeConstraint(x,y,x,y+1);
-            if (x<num_particles_width-1 && y<num_particles_height-1) makeConstraint(x,y,x+1,y+1);
-            if (x<num_particles_width-1 && y<num_particles_height-1) makeConstraint(x+1,y, x,y+1);
-        }
-    }
+    for(int x = 0; x < num_particles_width; x++) {
+        for(int y = 0; y < num_particles_height; y++) {
+            if (x < num_particles_width-1)                           makeConstraint(x,y, x+1,y);
+            if (y < num_particles_height-1)                          makeConstraint(x,y, x,y+1);
+            if (x > 0)                                               makeConstraint(x,y, x-1,y);
+            if (y > 0)                                               makeConstraint(x,y, x,y-1);
+            if (x<num_particles_width-1 && y<num_particles_height-1) makeConstraint(x,y, x+1,y+1);
+            if (x>0 && y<num_particles_height-1)                     makeConstraint(x,y, x-1,y+1);
+            if (x>0 && y>0)                                          makeConstraint(x,y, x-1,y-1);
+            if (x<num_particles_width-1 && y>0)                      makeConstraint(x,y, x+1,y-1);
 
-
-    // Connecting secondary neighbors with constraints (distance 2 and sqrt(4) in the grid)
-    for(int x=0; x<num_particles_width; x++) {
-        for(int y=0; y<num_particles_height; y++) {
-            if (x<num_particles_width-2) makeConstraint(x,y,x+2,y);
-            if (y<num_particles_height-2) makeConstraint(x,y,x,y+2);
-            if (x<num_particles_width-2 && y<num_particles_height-2) makeConstraint(x,y,x+2,y+2);
-            if (x<num_particles_width-2 && y<num_particles_height-2) makeConstraint(x+2,y,x,y+2);
         }
     }
 
@@ -107,8 +100,7 @@ void Cloth::addForce(const glm::vec3 &direction) {
 
 }
 
-void Cloth::update(const float &elapsedTime) {
-    addForce(glm::vec3(0, -0.005, 0)); // add gravity each frame, pointing down
+void Cloth::update(const float &deltaTime) {
 
     for(int i=0; i < iteration_count; i++) {// iterate over all constraints several times
         for(auto& constraint : constraints) {
@@ -117,10 +109,9 @@ void Cloth::update(const float &elapsedTime) {
     }
 
     for(auto& p : particles) {
-        p.update(elapsedTime);
+        p.update(deltaTime);
     }
 
-    floorCollision(0.f);
 }
 
 void Cloth::ballCollision(const glm::vec3& center, float radius) {
@@ -168,15 +159,11 @@ void Cloth::render3D(const RenderApi3D &api) {
 
             vertices.push_back(getParticle(x, y)->position);
             vertices.push_back(getParticle(x, y+1)->position);
-            vertices.push_back(getParticle(x, y+1)->position);
-            vertices.push_back(getParticle(x+1, y)->position);
             vertices.push_back(getParticle(x+1, y)->position);
             vertices.push_back(getParticle(x, y)->position);
 
             vertices.push_back(getParticle(x+1, y+1)->position);
             vertices.push_back(getParticle(x+1, y)->position);
-            vertices.push_back(getParticle(x+1, y)->position);
-            vertices.push_back(getParticle(x, y+1)->position);
             vertices.push_back(getParticle(x, y+1)->position);
             vertices.push_back(getParticle(x+1, y+1)->position);
 
@@ -187,6 +174,14 @@ void Cloth::render3D(const RenderApi3D &api) {
     for (unsigned int i = 0; i < vertices.size(); ++i) {
         colors[i] = {0.8, 0.5, 0.2, 1.0};
     }
+
+//    for(auto& c : constraints) {
+//        vertices.push_back(c.p1->position);
+//        vertices.push_back(c.p1->position + (c.p2->position - c.p1->position) * 0.3f);
+//
+//        colors.emplace_back(0.2, 0.5, 0.8, 1.0f);
+//        colors.emplace_back(0.2, 0.5, 0.8, 1.0f);
+//    }
 
 
     Buffer3D buffer3D;
@@ -204,28 +199,3 @@ void Cloth::render3D(const RenderApi3D &api) {
     deleteBuffer3D(buffer3D);
 
 }
-
-void ClothParticle::addForce(glm::vec3 f) {
-    acceleration += f/mass;
-}
-
-void ClothParticle::update(double elapsedTime) {
-    if(movable) {
-        glm::vec3 temp = position;
-        position = position + (position - old_position) * (1-drag) + (acceleration*(float)0.016);
-        old_position = temp;
-        acceleration = glm::vec3(0,0,0); // acceleration is reset since it HAS been translated into a change in position (and implicitely into velocity)
-    }
-}
-
-void ClothParticle::offsetPos(glm::vec3 offset) {
-    if(movable)
-        position += offset;
-}
-
-ClothParticle::ClothParticle(const glm::vec3 &pos)
-        : position(pos)
-        , old_position(pos)
-        , acceleration(glm::vec3(0,0,0))
-        , mass(1)
-        , movable(true) {}

@@ -11,23 +11,7 @@
 #include "entity.h"
 #include "particle.h"
 
-class ClothParticle {
-
-public:
-    glm::vec3 position;
-    glm::vec3 old_position;
-    glm::vec3 acceleration;
-    bool movable;
-    float mass = 1;
-    float drag = 0.01;
-
-    ClothParticle(const glm::vec3& pos);
-    ClothParticle() = default;
-
-    void addForce(glm::vec3 f);
-    void update(double elapsedTime);
-    void offsetPos(glm::vec3 offset);
-};
+using ClothParticle = Particle;
 
 struct Constraint {
 
@@ -57,7 +41,7 @@ public:
 
     // Entity override
     void init() override {}
-    void update(const float& elapsedTime) override;
+    void update(const float& deltaTime) override;
     void render3D(const RenderApi3D& api) override;
 
     void ballCollision(const glm::vec3 &center, float radius);

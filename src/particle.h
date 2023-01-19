@@ -22,10 +22,10 @@ public:
     bool movable = true;
 
     void init() override;
-    void update(const float &elapsedTime) override;
+    void update(const float &deltaTime) override;
     void render3D(const RenderApi3D& api) override;
-    void AddForce(const glm::vec3 &force);
-    void OffsetPos(const glm::vec3 &offset);
+    void addForce(const glm::vec3 &force);
+    void offsetPos(const glm::vec3 &offset);
 
 private:
     glm::vec3 forces;
