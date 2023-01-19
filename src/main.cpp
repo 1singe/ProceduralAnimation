@@ -2,6 +2,7 @@
 #include "drawbuffer.h"
 #include "renderapi.h"
 #include "cloth.h"
+#include "particle_system.h"
 
 #include <time.h>
 #include <imgui.h>
@@ -26,12 +27,13 @@ struct MyViewer : Viewer {
 	bool leftMouseButtonPressed;
 	bool altKeyPressed;
 
-    Particle* particle;
+    std::shared_ptr<ParticleSystem> particleSystem;
     std::shared_ptr<Cloth> cloth;
 
     float sphereAngle = 0.0;
 
     std::vector<std::shared_ptr<Entity>> entities;
+    float lastFrameTime = 0;
 
 
 
@@ -44,7 +46,7 @@ struct MyViewer : Viewer {
         cloth->getParticle(21, 24)->movable = false;
         cloth->getParticle(21, 0)->addForce({0.f, 0.f, 10.f});
 
-        particle = new Particle(glm::vec3(0.f, 0.f, 0.f), 1.f, 0.035f);
+        particleSystem = std::make_shared<ParticleSystem>(ParticleSystem({0, 0, 0}, 3.f, 1.f, 4, 1, 0.2));
 		cubePosition = glm::vec3(1.f, 0.25f, -1.f);
 		jointPosition = glm::vec3(-1.f, 2.f, -1.f);
 		boneAngle = 0.f;
@@ -55,9 +57,7 @@ struct MyViewer : Viewer {
 
 
         entities.emplace_back(cloth);
-        entities.emplace_back(particle);
-
-        particle->AddForce(glm::vec3{0, 100, 0});
+        entities.emplace_back(particleSystem);
 
         for(auto& entity : entities) {
             entity->init();
@@ -65,6 +65,8 @@ struct MyViewer : Viewer {
 	}
 
 	void update(double elapsedTime) override {
+
+        float deltaTime = elapsedTime - lastFrameTime;
 
 		boneAngle = (float) elapsedTime;
 		sphereAngle = (float) elapsedTime;
@@ -80,12 +82,12 @@ struct MyViewer : Viewer {
 
 
         for(auto& entity : entities) {
-            entity->update(elapsedTime);
+            entity->update(deltaTime);
         }
 
         glm::quat q = glm::angleAxis(boneAngle, glm::vec3(0.f, 1.f, 0.f));
         cloth->ballCollision(glm::vec3(-1.f, 0.5f, 1.f) * q, 0.5f);
-
+        lastFrameTime = elapsedTime;
 	}
 
 	void render3D(const RenderApi3D& api) const override {
@@ -191,7 +193,20 @@ struct MyViewer : Viewer {
 		ImGui::SliderFloat3("Cube Position", (float(&)[3])cubePosition, -1.f, 1.f);
 
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		
+
+        ImGui::Text("Particle System");
+
+        ImGui::SliderFloat3("Spawner Position: ", (float(&)[3])particleSystem->position, -10, 10);
+        ImGui::Checkbox("Active: ", &particleSystem->active);
+
+        ImGui::Checkbox("Gravity: ", &particleSystem->gravityEnabled);
+
+        ImGui::SliderFloat("Spawn Radius: ", &particleSystem->spawnRadius, 0, 10);
+
+        ImGui::InputFloat("Mass: ", &particleSystem->mass);
+        ImGui::InputFloat("Lifetime (s): ", &particleSystem->lifetime);
+        ImGui::InputFloat("Spawn rate (part/s): ", &particleSystem->spawnRate);
+
 		ImGui::End();
 
 		if (showDemoWindow) {

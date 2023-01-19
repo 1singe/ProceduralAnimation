@@ -32,11 +32,7 @@ void Particle::update(const float &elapsedTime) {
 }
 
 void Particle::render3D(const RenderApi3D &api) {
-
-
-    auto translate = glm::translate(glm::identity<glm::mat4>(), position);
-    glm::vec4 color = {1, 1, 1, 1};
-    api.solidCube(1, color, &translate);
+    api.solidSphere(position, 0.015f, 8, 8, {1, 1, 1, 1});
 }
 
 

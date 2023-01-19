@@ -4,6 +4,7 @@
 
 #include "particle_system.h"
 #include <random>
+#include <iostream>
 #include "utils.h"
 #include "expiring_particle.h"
 
@@ -14,28 +15,36 @@ void ParticleSystem::init() {
 
 void ParticleSystem::update(const float &elapsedTime) {
     innerTimer += elapsedTime;
-    if(!active || innerTimer <= 1.f / spawnRate) {
-        return;
+    if(active && (innerTimer >= 1 / spawnRate)) {
+        innerTimer = 0;
+        particles.emplace_back(utils::RandomPointInSphereBetterDistributed(position, spawnRadius), mass, drag, lifetime);
+        std::cout<< "inserted" << std::endl;
     }
-    innerTimer = 0;
-    particles.emplace_back(utils::RandomPointInSphereBetterDistributed(position, spawnRadius), mass, drag, lifetime);
-    //std::vector<ExpiringParticle*> toBeRemoved;
-    for(auto it = particles.begin(); it != particles.end(); it++){
+    for(auto it = particles.begin(); it != particles.end();){
         it->update(elapsedTime);
         it->timeSinceSpawn += elapsedTime;
         if(gravityEnabled){
             it->AddForce(utils::GRAVITY * it->mass);
         }
         if(it->timeSinceSpawn >= it->lifetime){
-            //toBeRemoved.emplace_back(&particle);
             it = particles.erase(it);
+        } else {
+            ++it;
         }
 
     }
 
+
+
+
+
 }
 
-void ParticleSystem::render3D(const RenderApi3D &api) {}
+void ParticleSystem::render3D(const RenderApi3D &api) {
+    for(auto& particle : particles){
+        particle.render3D(api);
+    }
+}
 
 ParticleSystem::ParticleSystem(const glm::vec3 &position) : Entity(position) {}
 

@@ -17,6 +17,6 @@ void ExpiringParticle::init() {
 
 void ExpiringParticle::update(const float &elapsedTime) {
     Particle::update(elapsedTime);
-
 }
+
 
