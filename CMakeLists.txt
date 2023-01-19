@@ -54,7 +54,9 @@ set(SOURCE_FILES
 	src/particle.cpp
 	src/cloth.cpp
 	src/entity.cpp
-	src/burst.cpp
+	src/utils.cpp
+	src/particle_system.cpp
+	src/expiring_particle.cpp
 )
 
 set(INCLUDE_DIRECTORIES 
