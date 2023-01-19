@@ -14,6 +14,7 @@ public:
     ExpiringParticle(const glm::vec3 &position, const float &mass, const float &drag, const float &lifetime);
     void init() override;
     void update(const float &elapsedTime) override;
+    void render3D(const RenderApi3D &api) override;
     float lifetime = 1;
     float timeSinceSpawn = 0;
 };

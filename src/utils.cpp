@@ -17,9 +17,9 @@ namespace utils {
     glm::vec3 RandomPointInSphereRejection(const glm::vec3 &position, const float &radius){
         float x, y, z, d;
         do {
-            x = Random::get(-radius, 1.f);
-            y = Random::get(-1.f, 1.f);
-            z = Random::get(-1.f, 1.f);
+            x = Random::get(-radius, radius);
+            y = Random::get(-radius, radius);
+            z = Random::get(-radius, radius);
             d = x*x + y*y + z*z;
         } while (d>1);
         return position + glm::vec3{x, y, z};

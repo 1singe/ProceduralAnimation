@@ -17,8 +17,7 @@ void ParticleSystem::update(const float &elapsedTime) {
     innerTimer += elapsedTime;
     if(active && (innerTimer >= 1 / spawnRate)) {
         innerTimer = 0;
-        particles.emplace_back(utils::RandomPointInSphereBetterDistributed(position, spawnRadius), mass, drag, lifetime);
-        std::cout<< "inserted" << std::endl;
+        particles.emplace_back(utils::RandomPointInSphereRejection(position, spawnRadius), mass, drag, lifetime);
     }
     for(auto it = particles.begin(); it != particles.end();){
         it->update(elapsedTime);
