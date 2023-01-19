@@ -26,7 +26,7 @@ Particle::Particle(const glm::vec3 &position, const float& mass, const float &dr
         forces(0),
         movable(true)
 {
-    AddForce(startUpVec * startUpForce);
+    addForce(startUpVec * startUpForce);
 }
 
 void Particle::init() {

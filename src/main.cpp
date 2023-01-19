@@ -3,6 +3,7 @@
 #include "renderapi.h"
 #include "cloth.h"
 #include "particle_system.h"
+#include "TwoJointIK.h"
 
 #include <time.h>
 #include <imgui.h>
@@ -57,10 +58,12 @@ struct MyViewer : Viewer {
 		leftMouseButtonPressed = false;
 		altKeyPressed = false;
 
-
+        std::shared_ptr<TwoJointIK> ik = std::make_shared<TwoJointIK>();
+        ik->position = {0, 2, 0};
 
         entities.emplace_back(cloth);
         entities.emplace_back(particleSystem);
+        entities.emplace_back(ik);
 
         for(auto& entity : entities) {
             entity->init();
@@ -121,13 +124,13 @@ struct MyViewer : Viewer {
 			api.lines(vertices, COUNTOF(vertices), white, &cubeModelMatrix);
 		}
 
-		{
-			glm::quat q = glm::angleAxis(boneAngle, glm::vec3(0.f, 1.f, 0.f));
-			glm::vec3 childRelPos = { 1.f, 1.f, 0.f };
-			api.bone(childRelPos, white, q, glm::vec3(0.f, 0.f, 0.f));
-			glm::vec3 childAbsPos = q * childRelPos;
-			api.solidSphere(childAbsPos, 0.05f, 10, 10, white);
-		}
+//		{
+//			glm::quat q = glm::angleAxis(boneAngle, glm::vec3(0.f, 1.f, 0.f));
+//			glm::vec3 childRelPos = { 1.f, 1.f, 0.f };
+//			api.bone(childRelPos, white, q, glm::vec3(0.f, 0.f, 0.f));
+//			glm::vec3 childAbsPos = q * childRelPos;
+//			api.solidSphere(childAbsPos, 0.05f, 10, 10, white);
+//		}
 
         glm::quat q = glm::angleAxis(boneAngle, glm::vec3(0.f, 1.f, 0.f));
 		api.solidSphere(glm::vec3(-1.f, 0.5f, 1.f) * q, 0.5f, 100, 100, white);

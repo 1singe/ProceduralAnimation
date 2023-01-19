@@ -21,8 +21,8 @@ public:
     explicit Entity() = default;
     explicit Entity(const glm::vec3 &position);
 
-    glm::vec3 position;
-    glm::vec3 old_position;
+    glm::vec3 position = {};
+    glm::vec3 old_position = {};
 };
 
 #endif //OPENGLSANDBOX_ENTITY_HPP

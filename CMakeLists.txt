@@ -57,7 +57,7 @@ set(SOURCE_FILES
 	src/utils.cpp
 	src/particle_system.cpp
 	src/expiring_particle.cpp
-)
+        src/TwoJointIK.cpp src/TwoJointIK.h)
 
 set(INCLUDE_DIRECTORIES 
 	${INCLUDE_DIRECTORIES}
