@@ -18,8 +18,6 @@ void Bone::render3D(const RenderApi3D &api, glm::vec3 parent_pos, glm::quat pare
     for(const auto& child : children) {
         child.render3D(api, worldPos, worldRot);
     }
-
-    printf("%f %f %f\n", worldPos.x, worldPos.y, worldPos.z);
 }
 
 TwoJointIK::TwoJointIK() : hip(position) {
