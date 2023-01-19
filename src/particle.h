@@ -14,6 +14,7 @@ class Particle : public Entity {
 public:
     Particle() = default;
     Particle(const glm::vec3 &position, const float &mass, const float &drag);
+    Particle(const glm::vec3 &position, const float &mass, const float &drag, const glm::vec3 &startUpVec, const float &startupForce);
 
     glm::vec3 speed;
     glm::vec3 acceleration;

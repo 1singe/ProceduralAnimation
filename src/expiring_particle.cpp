@@ -11,6 +11,12 @@ ExpiringParticle::ExpiringParticle(const glm::vec3 &position, const float& mass,
     timeSinceSpawn(0)
     {}
 
+ExpiringParticle::ExpiringParticle(const glm::vec3 &position, const float& mass, const float &drag, const float &lifetime, const glm::vec3 &startUpVec, const float &startUpForce):
+        Particle(position, mass, drag, startUpVec, startUpForce),
+        lifetime(lifetime),
+        timeSinceSpawn(0)
+{}
+
 void ExpiringParticle::init() {
     Particle::init();
 }

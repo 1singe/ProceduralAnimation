@@ -4,6 +4,7 @@
 
 #include "particle.h"
 #include "glm/ext/matrix_transform.hpp"
+#include "drawbuffer.h"
 
 
 Particle::Particle(const glm::vec3 &position, const float& mass, const float &drag):
@@ -15,6 +16,18 @@ Particle::Particle(const glm::vec3 &position, const float& mass, const float &dr
         forces(0),
         movable(true)
 {}
+
+Particle::Particle(const glm::vec3 &position, const float& mass, const float &drag, const glm::vec3 &startUpVec, const float &startUpForce):
+        Entity(position),
+        drag(drag),
+        mass(mass),
+        speed(0),
+        acceleration(0),
+        forces(0),
+        movable(true)
+{
+    AddForce(startUpVec * startUpForce);
+}
 
 void Particle::init() {
 

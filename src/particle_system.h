@@ -16,8 +16,10 @@ private:
     std::vector<ExpiringParticle> particles = std::vector<ExpiringParticle>();
 
 public:
-    float spawnRadius;
+    float startUpForce = 0;
+    float spawnRadius = 1;
     bool active = true;
+    bool canCollideWithGround= true;
     float lifetime = 1;
     float spawnRate = 4;
     float mass = 1;
