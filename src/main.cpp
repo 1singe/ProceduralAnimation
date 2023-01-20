@@ -34,6 +34,8 @@ struct MyViewer : Viewer {
     std::shared_ptr<Cloth> cloth;
     float clothGravity = 1.f;
 
+    std::shared_ptr<TwoJointIK> ik;
+
     float sphereAngle = 0.0;
 
     std::vector<std::shared_ptr<Entity>> entities;
@@ -45,7 +47,7 @@ struct MyViewer : Viewer {
 
 	void init() override {
 
-        cloth = std::make_shared<Cloth>(glm::vec3{-1.2, 0.1, 1.2}, 2, 2, 25, 25);
+        cloth = std::make_shared<Cloth>(glm::vec3{-1.2, 0.1, -1.2}, 2, 2, 25, 25);
         cloth->getParticle(0, 24)->movable = false;
         cloth->getParticle(24, 24)->movable = false;
         cloth->getParticle(21, 0)->addForce({0.f, 0.f, 10.f});
@@ -58,7 +60,7 @@ struct MyViewer : Viewer {
 		leftMouseButtonPressed = false;
 		altKeyPressed = false;
 
-        std::shared_ptr<TwoJointIK> ik = std::make_shared<TwoJointIK>();
+        ik = std::make_shared<TwoJointIK>();
         ik->position = {0.3, 1.5, 0};
 
         entities.emplace_back(cloth);
@@ -224,6 +226,11 @@ struct MyViewer : Viewer {
         // Cloth
         if(ImGui::CollapsingHeader("Cloth", ImGuiTreeNodeFlags_DefaultOpen)) {
             ImGui::SliderFloat("Gravity", &clothGravity, 0.f, 10.f);
+        }
+
+        // IK
+        if(ImGui::CollapsingHeader("Inverse Kinematic", ImGuiTreeNodeFlags_DefaultOpen)) {
+            ImGui::SliderFloat3("Target", &ik->targetHeelPosition[0], -1.f, 1.f);
         }
 
 		ImGui::End();

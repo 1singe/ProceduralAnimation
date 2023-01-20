@@ -36,12 +36,6 @@ void TwoJointIK::init() {
 
 void TwoJointIK::update(const float &deltaTime) {
 
-    static float angle = 0.0;
-    glm::quat q = glm::angleAxis(angle += 0.01, glm::vec3(0.f, 1.f, 0.f));
-    targetHeelPosition = glm::vec3(-0.15f, 0.15f, 1.f) * q;
-
-
-
     glm::quat a_gr = hip.rotation;
     glm::quat b_gr = hip.rotation * knee->rotation;
 
