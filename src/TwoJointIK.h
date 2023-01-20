@@ -22,12 +22,12 @@ struct Bone {
 };
 
 
-class TwoJointIK : public Entity {
+struct TwoJointIK : public Entity {
 
     Bone hip, *knee, *heel;
 
-public:
     TwoJointIK();
+    TwoJointIK(const glm::vec3& pos, const glm::vec3& hip_pos, const glm::vec3& knee_pos, const glm::vec3& heel_pos);
 
     glm::vec3 targetHeelPosition = {};
 

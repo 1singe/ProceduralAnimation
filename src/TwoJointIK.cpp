@@ -13,7 +13,7 @@ void Bone::render3D(const RenderApi3D &api, glm::vec3 parent_pos, glm::quat pare
     glm::vec3 worldPos = parent_pos + parent_rot * position;
     glm::quat worldRot = parent_rot * rotation;
 
-    glm::vec3 child_pos = children.empty() ? glm::vec3{0.5, 0, 0} : children.front().position;
+    glm::vec3 child_pos = children.empty() ? glm::vec3{0, 0, 0} : children.front().position;
 
 //    api.solidSphere(worldPos, 0.1, 10, 10, {0.6f, 0.8f, 1.f, 1.f});
     api.bone(child_pos, {0.6f, 0.8f, 1.f, 1.f}, worldRot, worldPos);
@@ -27,6 +27,14 @@ TwoJointIK::TwoJointIK() : hip(position) {
     hip.children.emplace_back(glm::vec3{0, -0.7, 0});
     knee = &hip.children.back();
     knee->children.emplace_back(glm::vec3{0, -1.5, 0});
+    heel = &knee->children.back();
+}
+
+TwoJointIK::TwoJointIK(const glm::vec3& pos, const glm::vec3 &hip_pos, const glm::vec3 &knee_pos, const glm::vec3 &heel_pos) : Entity(pos) {
+    hip.position = hip_pos;
+    hip.children.emplace_back(knee_pos);
+    knee = &hip.children.back();
+    knee->children.emplace_back(heel_pos);
     heel = &knee->children.back();
 }
 
@@ -44,7 +52,7 @@ void TwoJointIK::update(const float &deltaTime) {
     glm::vec3 c = b + b_gr * heel->position;
     glm::vec3 t = targetHeelPosition;
 
-    glm::vec3 d = b_gr * glm::vec3(1, 0, 0);
+    glm::vec3 d = b_gr * glm::vec3(0, 0, 1);
 
     glm::quat& a_lr = hip.rotation;
     glm::quat& b_lr = knee->rotation;
@@ -72,8 +80,6 @@ void TwoJointIK::update(const float &deltaTime) {
     glm::quat r0 = glm::angleAxis(ac_ab_1 - ac_ab_0, glm::inverse(a_gr) * axis0);
     glm::quat r1 = glm::angleAxis(ba_bc_1 - ba_bc_0, glm::inverse(b_gr) * axis0);
 
-    a_lr *= r0;
-    b_lr *= r1;
 
     // Rotate the heel into place
     float ac_at_0 = glm::acos(glm::clamp(glm::dot(
@@ -84,7 +90,19 @@ void TwoJointIK::update(const float &deltaTime) {
 
     glm::quat r2 = glm::angleAxis(ac_at_0, glm::inverse(a_gr) * axis1);
 
-    a_lr *= r2;
+    b_lr *= r1;
+    a_lr *= r0 * r2;
+
+    //
+    glm::vec3 up = {0, 1, 0};
+    glm::vec3 legUp = b - a;
+    legUp.x = 0;
+    legUp = glm::normalize(legUp);
+    float upAdjustAngle = glm::acos(glm::clamp(glm::dot(
+            glm::normalize(up),
+            glm::normalize(legUp)), -1.f, 1.f));
+    glm::quat r3 = glm::angleAxis(upAdjustAngle, glm::inverse(a_gr) * glm::vec3{1, 0, 0});
+//    a_lr *= r3;
 
 }
 
@@ -98,13 +116,23 @@ void TwoJointIK::render3D(const RenderApi3D &api) {
     glm::vec3 c = b + hip.rotation * knee->rotation * heel->position;
     glm::vec3 t = targetHeelPosition;
 
-    api.solidSphere(a, 0.1, 10, 10, {1.0f, 0.0f, 0.0f, 1.f});
-    api.solidSphere(b, 0.1, 10, 10, {0.0f, 1.0f, 0.0f, 1.f});
-    api.solidSphere(c, 0.1, 10, 10, {0.0f, 0.0f, 1.0f, 1.f});
+    api.solidSphere(a, 0.01, 10, 10, {1.0f, 0.0f, 0.0f, 1.f});
+    api.solidSphere(b, 0.01, 10, 10, {0.0f, 1.0f, 0.0f, 1.f});
+    api.solidSphere(c, 0.01, 10, 10, {0.0f, 0.0f, 1.0f, 1.f});
 
-    api.solidSphere(t, 0.1, 10, 10, {1.f, 0.0f, 1.f, 1.f});
+    api.solidSphere(t, 0.02, 10, 10, {1.f, 0.5f, 1.f, 1.f});
 
+    glm::vec3 up = glm::vec3{0, 1, 0};
+    glm::vec3 legUp = b - a;
+    legUp.x = 0;
+    legUp = glm::normalize(legUp);
+
+    std::vector<glm::vec3> v;
+    v.push_back(a);
+    v.push_back(a + legUp * 0.2f);
+    api.lines(v.data(), v.size(), {1, 0, 0, 1}, nullptr);
 }
+
 
 
 

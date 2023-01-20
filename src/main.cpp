@@ -4,6 +4,7 @@
 #include "cloth.h"
 #include "particle_system.h"
 #include "TwoJointIK.h"
+#include "Spider.h"
 
 #include <time.h>
 #include <imgui.h>
@@ -35,6 +36,7 @@ struct MyViewer : Viewer {
     float clothGravity = 1.f;
 
     std::shared_ptr<TwoJointIK> ik;
+    std::shared_ptr<Spider> spider;
 
     float sphereAngle = 0.0;
 
@@ -63,9 +65,13 @@ struct MyViewer : Viewer {
         ik = std::make_shared<TwoJointIK>();
         ik->position = {0.3, 1.5, 0};
 
+        spider = std::make_shared<Spider>();
+        spider->position = {3.0, 0.1, 0};
+
         entities.emplace_back(cloth);
         entities.emplace_back(particleSystem);
         entities.emplace_back(ik);
+        entities.emplace_back(spider);
 
         for(auto& entity : entities) {
             entity->init();
