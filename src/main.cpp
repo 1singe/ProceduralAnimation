@@ -59,7 +59,7 @@ struct MyViewer : Viewer {
 		altKeyPressed = false;
 
         std::shared_ptr<TwoJointIK> ik = std::make_shared<TwoJointIK>();
-        ik->position = {0, 2, 0};
+        ik->position = {0.3, 1.5, 0};
 
         entities.emplace_back(cloth);
         entities.emplace_back(particleSystem);
