@@ -173,13 +173,13 @@ struct MyViewer : Viewer {
 		}
 
 		{
-			glm::vec2 vertices[] = {
-				{ padding, viewportHeight - padding },
-				{ viewportWidth * 0.5f, viewportHeight - 2.f * padding },
-				{ viewportWidth * 0.5f, viewportHeight - 2.f * padding },
-				{ viewportWidth - padding, viewportHeight - padding },
-			};
-			api.lines(vertices, COUNTOF(vertices), white);
+//			glm::vec2 vertices[] = {
+//				{ padding, viewportHeight - padding },
+//				{ viewportWidth * 0.5f, viewportHeight - 2.f * padding },
+//				{ viewportWidth * 0.5f, viewportHeight - 2.f * padding },
+//				{ viewportWidth - padding, viewportHeight - padding },
+//			};
+//			api.lines(vertices, COUNTOF(vertices), white);
 		}
 	}
 
