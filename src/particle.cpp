@@ -57,3 +57,11 @@ void Particle::addForce(const glm::vec3 &force) {
 void Particle::offsetPos(const glm::vec3 &offset) {
     if(movable) position += offset;
 }
+
+Particle::Particle(const glm::vec3 &position) : Entity(position),
+                                                drag(0),
+                                                mass(1),
+                                                speed(0),
+                                                acceleration(0),
+                                                forces(0),
+                                                movable(true){}

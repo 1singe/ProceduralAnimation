@@ -72,4 +72,7 @@ namespace utils {
         std::cout << nanos << std::endl;
     }
 
+    Box::Box(const glm::vec3 &position, const glm::vec3 &dimensions) : position(position), dimensions(dimensions) {
+
+    }
 } // utils

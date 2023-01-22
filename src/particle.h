@@ -13,11 +13,12 @@ class Particle : public Entity {
 
 public:
     Particle() = default;
+    explicit Particle(const glm::vec3 &position);
     Particle(const glm::vec3 &position, const float &mass, const float &drag);
     Particle(const glm::vec3 &position, const float &mass, const float &drag, const glm::vec3 &startUpVec, const float &startupForce);
 
-    glm::vec3 speed;
-    glm::vec3 acceleration;
+    glm::vec3 speed = {};
+    glm::vec3 acceleration = {};
     float mass = 1.0f;
     float drag = 0.005f;
     bool movable = true;
@@ -29,7 +30,7 @@ public:
     void offsetPos(const glm::vec3 &offset);
 
 private:
-    glm::vec3 forces;
+    glm::vec3 forces = {};
 
 };
 

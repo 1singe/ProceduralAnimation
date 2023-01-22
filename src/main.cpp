@@ -5,6 +5,7 @@
 #include "particle_system.h"
 #include "TwoJointIK.h"
 #include "Spider.h"
+#include "boids_system.h"
 
 #include <time.h>
 #include <imgui.h>
@@ -37,6 +38,7 @@ struct MyViewer : Viewer {
 
     std::shared_ptr<TwoJointIK> ik;
     std::shared_ptr<Spider> spider;
+    std::shared_ptr<BoidSystem> boidSystem;
 
     float sphereAngle = 0.0;
 
@@ -52,6 +54,10 @@ struct MyViewer : Viewer {
         cloth = std::make_shared<Cloth>(glm::vec3{-1.2, 0.1, -1.2}, 2, 2, 25, 25);
         cloth->getParticle(0, 24)->movable = false;
         cloth->getParticle(24, 24)->movable = false;
+        boidSystem = std::make_shared<BoidSystem>(BoidSystem(10));
+        cloth = std::make_shared<Cloth>(glm::vec3{-1.2, 0.1, 1.2}, 2, 2, 25, 25);
+//        cloth->getParticle(2, 24)->movable = false;
+        cloth->getParticle(21, 24)->movable = false;
         cloth->getParticle(21, 0)->addForce({0.f, 0.f, 10.f});
 
         particleSystem = std::make_shared<ParticleSystem>(ParticleSystem({0, 0, 0}, 3.f, 1.f, 4, 1, 0.2));
@@ -70,6 +76,7 @@ struct MyViewer : Viewer {
 
         entities.emplace_back(cloth);
         entities.emplace_back(particleSystem);
+        entities.emplace_back(boidSystem);
         entities.emplace_back(ik);
         entities.emplace_back(spider);
 
@@ -215,19 +222,38 @@ struct MyViewer : Viewer {
 
         ImGui::Text("Particle System");
 
-        ImGui::SliderFloat3("Spawner Position: ", (float(&)[3])particleSystem->position, -10, 10);
-        ImGui::Checkbox("Active: ", &particleSystem->active);
 
-        ImGui::Checkbox("Gravity: ", &particleSystem->gravityEnabled);
+        if(ImGui::CollapsingHeader("Particle System", ImGuiTreeNodeFlags_DefaultOpen)) {
+            ImGui::SliderFloat3("Spawner Position: ", (float (&)[3]) particleSystem->position, -10, 10);
+            ImGui::Checkbox("Active: ", &particleSystem->active);
 
-        ImGui::SliderFloat("Spawn Radius: ", &particleSystem->spawnRadius, 0, 10);
+            ImGui::Checkbox("Gravity: ", &particleSystem->gravityEnabled);
 
-        ImGui::InputFloat("Mass: ", &particleSystem->mass);
-        ImGui::InputFloat("Lifetime (s): ", &particleSystem->lifetime);
-        ImGui::InputFloat("Spawn rate (part/s): ", &particleSystem->spawnRate);
-        ImGui::SliderFloat("Drag: ", &particleSystem->drag, 0, 1);
+            ImGui::SliderFloat("Spawn Radius: ", &particleSystem->spawnRadius, 0, 10);
 
-        ImGui::InputFloat("Start Up Force", &particleSystem->startUpForce);
+            ImGui::InputFloat("Mass: ", &particleSystem->mass);
+            ImGui::InputFloat("Lifetime (s): ", &particleSystem->lifetime);
+            ImGui::InputFloat("Spawn rate (part/s): ", &particleSystem->spawnRate);
+            ImGui::SliderFloat("Drag: ", &particleSystem->drag, 0, 1);
+
+            ImGui::InputFloat("Start Up Force", &particleSystem->startUpForce);
+        }
+
+        if(ImGui::CollapsingHeader("Boids", ImGuiTreeNodeFlags_DefaultOpen)) {
+            ImGui::SliderFloat("Simulation Speed", &boidSystem->simulation, 0, 1);
+            ImGui::InputFloat("Avoidance", &boidSystem->avoidance);
+            ImGui::SliderFloat("Alignment", &boidSystem->alignmentWeight, 0, 1);
+            ImGui::SliderFloat("Cohesion", &boidSystem->cohesionWeight, 0, 1);
+            ImGui::SliderFloat("Separation", &boidSystem->separationWeight, 0, 1);
+            ImGui::InputFloat("Awareness Radius", &boidSystem->awarenessRadius);
+            ImGui::InputFloat("Protected Radius", &boidSystem->protectedRadius);
+            ImGui::InputInt("Boids Amount", &boidSystem->targetAmount);
+            ImGui::SliderFloat3("Box Dimensions: ", (float (&)[3]) boidSystem->box.dimensions, -10, 10);
+            ImGui::SliderFloat3("Target Position: ", (float (&)[3]) boidSystem->target, -10, 10);
+            ImGui::SliderFloat("Target weight: ", &boidSystem->targetWeight, -1, 1);
+            ImGui::InputFloat("Min Speed: ", & boidSystem->minSpeed);
+            ImGui::InputFloat("Max Speed: ", & boidSystem->maxSpeed);
+        }
 
         // Cloth
         if(ImGui::CollapsingHeader("Cloth", ImGuiTreeNodeFlags_DefaultOpen)) {

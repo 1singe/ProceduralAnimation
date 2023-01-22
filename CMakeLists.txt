@@ -57,7 +57,14 @@ set(SOURCE_FILES
 	src/utils.cpp
 	src/particle_system.cpp
 	src/expiring_particle.cpp
-        src/TwoJointIK.cpp src/TwoJointIK.h src/Spider.cpp src/Spider.h)
+	src/TwoJointIK.cpp
+	src/TwoJointIK.h
+	src/Spider.cpp
+	src/Spider.h
+	src/boids_system.cpp
+	src/boids_system.h
+	src/boid.cpp
+	src/boid.h)
 
 set(INCLUDE_DIRECTORIES 
 	${INCLUDE_DIRECTORIES}
